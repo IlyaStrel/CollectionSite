@@ -1,0 +1,27 @@
+﻿@page
+@{
+    ViewData["Title"] = "Main";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Ports scanning</h1>
+    <p>Input target IP addresses.</p>
+    <p>Examples:</p>
+    <p>8.8.8.8</p>
+    <p>8.8.8.8 1.1.1.1 45.33.49.119</p>
+    <div>
+        <p>
+            <input id="ipAddresses" type="text" name="address" placeholder="Input target IPs with space" size="18" style="width: 50%; min-width: 300px;" />
+        </p>
+        <p>
+            <button id="scanButton" class="text-dark" onclick="getScanning()"
+                    style="width: 5%; min-width: 100px;">Scan</button>
+        </p>
+
+        <div style="display: flex; margin: 10px calc(50% - 1em); align-items: center">
+            <div class="load"></div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+</div>

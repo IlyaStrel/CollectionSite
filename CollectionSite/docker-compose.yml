@@ -1,0 +1,66 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.postgres.address=:5432"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=bk-r@mail.ru"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+      - "80:80"
+      - "5432:5432"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - cs-network
+
+  cs:
+    image: "cs:latest"
+    container_name: "cs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cs.rule=Host(`319737.simplecloud.ru`)"
+      - "traefik.http.routers.cs.entrypoints=websecure"
+      - "traefik.http.routers.cs.tls.certresolver=myresolver"
+      - "traefik.http.services.cs.loadbalancer.server.port=80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT="Production"
+    networks:
+      - cs-network
+
+  postgres:
+    image: "postgres:latest"
+    container_name: "postgres"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.postgres.entrypoints=postgres"
+      - "traefik.tcp.routers.postgres.tls=false"
+      - "traefik.tcp.routers.postgres.service=postgres"
+      - "traefik.tcp.services.postgres.loadbalancer.server.port=5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+      - POSTGRES_DB=postgres
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - DEFAULT_ENCODING="UTF8"
+      - DEFAULT_COLLATION="pt_BR.UTF-8"
+      - DEFAULT_CTYPE="pt_BR.UTF-8"
+    networks:
+      - cs-network
+
+networks:
+  cs-network:
+    driver: bridge
