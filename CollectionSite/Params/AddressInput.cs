@@ -19,16 +19,16 @@ namespace CollectionSite
         public IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)
         {
-            if (string.IsNullOrWhiteSpace(Addresses) || !IsNumbersOnly())
+            if (string.IsNullOrWhiteSpace(Addresses))
             {
                 yield return new ValidationResult(
                     $"Set addresses '{Addresses}'");
                 yield break;
             }
-            else if (!IsAllIpFormat(Addresses))
+            else if (!IsAllFormat(Addresses))
             {
                 yield return new ValidationResult(
-                     $"Set addresses '{Addresses}'");
+                     $"No valid addresses '{Addresses}'");
                 yield break;
             }
             else
@@ -38,24 +38,14 @@ namespace CollectionSite
             }
         }
 
-        bool IsNumbersOnly()
-        {
-            Addresses = Addresses.Trim(' ');
-            foreach (char c in Addresses)
-                if ((c < '0' || c > '9') && c != '.' && c != ' ')
-                    return false;
-
-            return true;
-        }
-
-        bool IsAllIpFormat(string str)
+        bool IsAllFormat(string str)
         {
             var arr = str.Split(' ');
             if (arr == null || !arr.Any())
                 return false;
 
             foreach (var i in arr)
-                if (!IsIpFormat(i))
+                if (!IsIpFormat(i) && !IsDnsFormat(i))
                     return false;
 
             return true;
@@ -63,9 +53,18 @@ namespace CollectionSite
 
         bool IsIpFormat(string str)
         {
-            var ip = new Regex("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$");
+            var ip = new Regex(
+                "^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$");
 
             return ip.IsMatch(str);
+        }
+
+        bool IsDnsFormat(string str)
+        {
+            var dns = new Regex(
+                "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]))*$");
+
+            return dns.IsMatch(str);
         }
     }
 }

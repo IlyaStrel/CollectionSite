@@ -21,7 +21,6 @@ namespace CollectionSite.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("scanning")]
-        //[Produces("application/json")]
         public async Task<ActionResult> GetScanning(
             [FromQuery] AddressInput addressIn)
         {

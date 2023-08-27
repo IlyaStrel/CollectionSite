@@ -31,6 +31,19 @@ body {
     animation: Rotate .3s linear infinite;
 }
 
+table {
+    margin: 0 0 10px 0;
+}
+
+tr {
+    border: 1px solid #a5a1a1;
+}
+
+td {
+    border: 1px solid #a5a1a1;
+    padding: 0 10px;
+}
+
 @keyframes Rotate {
     from {
         transform: rotate(-360deg);

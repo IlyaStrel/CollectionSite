@@ -9,7 +9,6 @@
         type: 'GET',
         url: '/consumer/scanning',
         data: { addresses: text },
-        //dataType: "json",
         success: function (result) {
             document.querySelector('.load').style.display = 'none';
             document.querySelector('#ipAddresses').disabled = false;
